@@ -71,7 +71,7 @@ function display_earnings_and_refunds_widget_content($data) {
         <tr>
             <th class="download-name">Download Name</th>
             <th class="total">Total</th>
-            <th class="edd_subscription">EDD Subscription</th>
+            <th class="edd_subscription">Subscription</th>
             <th class="refunded">Refunded</th>
         </tr>
         <?php foreach ($data as $row) { ?>

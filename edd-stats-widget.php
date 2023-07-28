@@ -70,14 +70,25 @@ function display_earnings_and_refunds_widget_content($data) {
     <table class="edd-stats">
         <tr>
             <th class="download-name">Download Name</th>
-            <th class="total">Total (Complete + Refunded)</th>
+            <th class="total">Total</th>
             <th class="edd_subscription">EDD Subscription</th>
             <th class="refunded">Refunded</th>
         </tr>
         <?php foreach ($data as $row) { ?>
             <tr>
                 <td><?php echo $row->download_name; ?></td>
-                <td>$<?php echo number_format(abs($row->total + $row->refunded), 2); ?></td>
+                <?php
+                $total_with_refunded = $row->total + $row->refunded;
+                $total_to_display = abs($total_with_refunded);
+                $is_refund_only = $total_with_refunded < 0;
+                ?>
+                <td>
+                    <?php if ($is_refund_only) : ?>
+                        - $<?php echo number_format($total_to_display, 2); ?>
+                    <?php else : ?>
+                        $<?php echo number_format($total_to_display, 2); ?>
+                    <?php endif; ?>
+                </td>
                 <td>$<?php echo number_format(abs($row->edd_subscription), 2); ?></td>
                 <td>$<?php echo number_format(abs($row->refunded), 2); ?></td>
             </tr>
@@ -104,6 +115,7 @@ function display_earnings_and_refunds_widget_content($data) {
     </style>
     <?php
 }
+
 
 
 

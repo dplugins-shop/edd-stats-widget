@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name: Eesy Digital Downloads - Stats dashboard widget
+ * Plugin Name: EDD Stats per Download per Months
  * Description: Adds custom dashboard widgets to display earnings per download with dates.
  * Version: 1.0
  * Author: Marko Krstic
@@ -19,29 +19,26 @@ function display_earnings_and_refunds_dashboard_widgets() {
         // Calculate the date 3 months ago from the current date
         $three_months_ago = date('Y-m-d', strtotime('-3 months', strtotime($current_date)));
 
-$query = "
-    SELECT
-        oi.product_name AS download_name,
-        DATE_FORMAT(o.date_created, '%Y-%m') AS month,
-        SUM(CASE WHEN o.status = 'complete' THEN oi.total
-                 WHEN o.status = 'edd_subscription' THEN oi.total
-                 ELSE 0 END) AS earnings,
-        SUM(CASE WHEN o.status = 'refunded' THEN oi.total ELSE 0 END) AS refunds,
-        COUNT(CASE WHEN o.status = 'complete' THEN oi.id ELSE NULL END) AS total_downloads
-    FROM
-        {$wpdb->prefix}edd_orders o
-    JOIN
-        {$wpdb->prefix}edd_order_items oi ON o.id = oi.order_id
-    WHERE
-        oi.type = 'download'
-        AND o.status IN ('complete', 'edd_subscription', 'refunded')
-        AND o.date_created >= '{$three_months_ago}'
-    GROUP BY
-        oi.product_name, month
-    ORDER BY
-        month DESC, total_downloads DESC;
-";
-
+        $query = "
+            SELECT
+                oi.product_name AS download_name,
+                DATE_FORMAT(o.date_created, '%Y-%m') AS month,
+                SUM(CASE WHEN o.status = 'complete' THEN oi.total ELSE 0 END) AS earnings,
+                SUM(CASE WHEN o.status = 'refunded' THEN -oi.total ELSE 0 END) AS refunds,
+                COUNT(CASE WHEN o.status = 'complete' THEN oi.id ELSE NULL END) AS total_downloads
+            FROM
+                {$wpdb->prefix}edd_orders o
+            JOIN
+                {$wpdb->prefix}edd_order_items oi ON o.id = oi.order_id
+            WHERE
+                oi.type = 'download'
+                AND o.status IN ('complete', 'refunded')
+                AND o.date_created >= '{$three_months_ago}'
+            GROUP BY
+                oi.product_name, month
+            ORDER BY
+                month DESC, total_downloads DESC;
+        ";
 
         $results = $wpdb->get_results($query);
 
@@ -69,7 +66,7 @@ $query = "
 
 function display_earnings_and_refunds_widget_content($data) {
     ?>
-        <table class="edd-stats">
+    <table class="edd-stats">
         <tr>
             <th class="download-name">Download Name</th>
             <th class="download-earnings">Earnings</th>
@@ -78,8 +75,8 @@ function display_earnings_and_refunds_widget_content($data) {
         <?php foreach ($data as $row) { ?>
             <tr>
                 <td><?php echo $row->download_name; ?></td>
-                <td>$<?php echo number_format(abs($row->earnings), 2); ?></td>
-                <td>$<?php echo number_format(abs($row->refunds), 2); ?></td>
+                <td>$<?php echo number_format($row->earnings, 2); ?></td>
+                <td>$<?php echo number_format($row->refunds, 2); ?></td>
             </tr>
         <?php } ?>
     </table>

@@ -1,14 +1,16 @@
 <?php
+
 /**
  * Plugin Name: EDD Stats per Download per Months
  * Description: Adds custom dashboard widgets to display earnings per download with dates.
- * Version: 1.0
+ * Version: 1.0.0
  * Author: Marko Krstic
  * Author URI: DPlugins
  * Text Domain: custom-edd-dashboard-widget
  */
 
-function display_earnings_and_refunds_dashboard_widgets() {
+function display_earnings_and_refunds_dashboard_widgets()
+{
     // Check if the current user has the 'manage_options' capability (Administrator)
     if (current_user_can('manage_options')) {
         global $wpdb;
@@ -37,9 +39,9 @@ function display_earnings_and_refunds_dashboard_widgets() {
         GROUP BY
             oi.product_name, month
         ORDER BY
-            month DESC;
+            month DESC, download_name ASC;
     ";
-    
+
 
         $results = $wpdb->get_results($query);
 
@@ -65,8 +67,9 @@ function display_earnings_and_refunds_dashboard_widgets() {
     }
 }
 
-function display_earnings_and_refunds_widget_content($data) {
-    ?>
+function display_earnings_and_refunds_widget_content($data)
+{
+?>
     <table class="edd-stats">
         <tr>
             <th class="download-name">Download Name</th>
@@ -110,39 +113,38 @@ function display_earnings_and_refunds_widget_content($data) {
             width: 100%;
         }
 
-        .total, .edd_subscription, .refunded {
+        .total,
+        .edd_subscription,
+        .refunded {
             padding-right: 20px;
         }
     </style>
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        var copyTableButtons = document.querySelectorAll(".copy-table-button");
-        copyTableButtons.forEach(function (button) {
-            button.addEventListener("click", function () {
-                var table = button.previousElementSibling;
-                var range = document.createRange();
-                range.selectNode(table);
-                window.getSelection().removeAllRanges();
-                window.getSelection().addRange(range);
-                document.execCommand("copy");
-                window.getSelection().removeAllRanges();
-                
-                // Change the button text to "Copied" and revert after 3 seconds
-                var originalButtonText = button.textContent;
-                button.textContent = "Copied";
-                setTimeout(function () {
-                    button.textContent = originalButtonText;
-                }, 3000);
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var copyTableButtons = document.querySelectorAll(".copy-table-button");
+            copyTableButtons.forEach(function(button) {
+                button.addEventListener("click", function() {
+                    var table = button.previousElementSibling;
+                    var range = document.createRange();
+                    range.selectNode(table);
+                    window.getSelection().removeAllRanges();
+                    window.getSelection().addRange(range);
+                    document.execCommand("copy");
+                    window.getSelection().removeAllRanges();
+
+                    // Change the button text to "Copied" and revert after 3 seconds
+                    var originalButtonText = button.textContent;
+                    button.textContent = "Copied";
+                    setTimeout(function() {
+                        button.textContent = originalButtonText;
+                    }, 3000);
+                });
             });
         });
-    });
-</script>
+    </script>
 
 
-    <?php
+<?php
 }
-
-
-
 
 add_action('wp_dashboard_setup', 'display_earnings_and_refunds_dashboard_widgets');

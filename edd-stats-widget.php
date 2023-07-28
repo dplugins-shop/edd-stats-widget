@@ -13,6 +13,12 @@ function display_earnings_and_refunds_dashboard_widgets() {
     if (current_user_can('manage_options')) {
         global $wpdb;
 
+        // Get the current date
+        $current_date = current_time('Y-m-d');
+
+        // Calculate the date 3 months ago from the current date
+        $three_months_ago = date('Y-m-d', strtotime('-3 months', strtotime($current_date)));
+
         $query = "
             SELECT
                 oi.product_name AS download_name,
@@ -27,6 +33,7 @@ function display_earnings_and_refunds_dashboard_widgets() {
             WHERE
                 oi.type = 'download'
                 AND o.status IN ('complete', 'refunded')
+                AND o.date_created >= '{$three_months_ago}'
             GROUP BY
                 oi.product_name, month
             ORDER BY

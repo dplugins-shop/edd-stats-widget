@@ -71,7 +71,7 @@ function display_earnings_and_refunds_widget_content($data) {
         <tr>
             <th class="download-name">Download Name</th>
             <th class="total">Total</th>
-            <th class="edd_subscription">Subscription</th>
+            <!-- <th class="edd_subscription">Subscription</th> -->
             <th class="refunded">Refunded</th>
         </tr>
         <?php foreach ($data as $row) { ?>
@@ -89,7 +89,7 @@ function display_earnings_and_refunds_widget_content($data) {
                         $<?php echo number_format($total_to_display, 2); ?>
                     <?php endif; ?>
                 </td>
-                <td>$<?php echo number_format(abs($row->edd_subscription), 2); ?></td>
+                <!-- <td>$<?php echo number_format(abs($row->edd_subscription), 2); ?></td> -->
                 <td>$<?php echo number_format(abs($row->refunded), 2); ?></td>
             </tr>
         <?php } ?>

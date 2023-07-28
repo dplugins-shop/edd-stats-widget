@@ -23,7 +23,7 @@ function display_earnings_and_refunds_dashboard_widgets() {
         SELECT
             oi.product_name AS download_name,
             DATE_FORMAT(o.date_created, '%Y-%m') AS month,
-            SUM(CASE WHEN o.status = 'complete' THEN oi.total ELSE 0 END) AS complete,
+            SUM(oi.total) AS total,
             SUM(CASE WHEN o.status = 'edd_subscription' THEN oi.total ELSE 0 END) AS edd_subscription,
             SUM(CASE WHEN o.status = 'refunded' THEN oi.total ELSE 0 END) AS refunded
         FROM
@@ -39,6 +39,7 @@ function display_earnings_and_refunds_dashboard_widgets() {
         ORDER BY
             month DESC;
     ";
+    
 
         $results = $wpdb->get_results($query);
 
@@ -69,14 +70,14 @@ function display_earnings_and_refunds_widget_content($data) {
     <table class="edd-stats">
         <tr>
             <th class="download-name">Download Name</th>
-            <th class="complete">Complete</th>
-            <th class="edd_subscription">Subscription</th>
+            <th class="total">Total (Complete + Refunded)</th>
+            <th class="edd_subscription">EDD Subscription</th>
             <th class="refunded">Refunded</th>
         </tr>
         <?php foreach ($data as $row) { ?>
             <tr>
                 <td><?php echo $row->download_name; ?></td>
-                <td>$<?php echo number_format(abs($row->complete), 2); ?></td>
+                <td>$<?php echo number_format(abs($row->total + $row->refunded), 2); ?></td>
                 <td>$<?php echo number_format(abs($row->edd_subscription), 2); ?></td>
                 <td>$<?php echo number_format(abs($row->refunded), 2); ?></td>
             </tr>
@@ -97,11 +98,13 @@ function display_earnings_and_refunds_widget_content($data) {
             width: 100%;
         }
 
-        .complete, .edd_subscription, .refunded {
+        .total, .edd_subscription, .refunded {
             padding-right: 20px;
         }
     </style>
     <?php
 }
+
+
 
 add_action('wp_dashboard_setup', 'display_earnings_and_refunds_dashboard_widgets');

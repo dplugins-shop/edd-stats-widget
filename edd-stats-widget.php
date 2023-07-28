@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name: EDD Stats per Download per Months
+ * Plugin Name: Eesy Digital Downloads - Stats dashboard widget
  * Description: Adds custom dashboard widgets to display earnings per download with dates.
  * Version: 1.0
  * Author: Marko Krstic

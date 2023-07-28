@@ -52,7 +52,7 @@ function display_earnings_and_refunds_dashboard_widgets() {
         // Create separate widgets for each month's data
         foreach ($grouped_results as $month => $month_data) {
             $widget_id = 'edd_earnings_and_refunds_dashboard_widget_' . str_replace('-', '_', $month);
-            $widget_title = 'EDD Earnings and Refunds - ' . date('F Y', strtotime($month));
+            $widget_title = 'EDD - ' . date('F Y', strtotime($month));
 
             wp_add_dashboard_widget(
                 $widget_id,
@@ -94,6 +94,7 @@ function display_earnings_and_refunds_widget_content($data) {
             </tr>
         <?php } ?>
     </table>
+    <button class="copy-table-button">Copy Table</button>
     <style>
         .edd-stats {
             margin-bottom: 20px;
@@ -113,6 +114,31 @@ function display_earnings_and_refunds_widget_content($data) {
             padding-right: 20px;
         }
     </style>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var copyTableButtons = document.querySelectorAll(".copy-table-button");
+        copyTableButtons.forEach(function (button) {
+            button.addEventListener("click", function () {
+                var table = button.previousElementSibling;
+                var range = document.createRange();
+                range.selectNode(table);
+                window.getSelection().removeAllRanges();
+                window.getSelection().addRange(range);
+                document.execCommand("copy");
+                window.getSelection().removeAllRanges();
+                
+                // Change the button text to "Copied" and revert after 3 seconds
+                var originalButtonText = button.textContent;
+                button.textContent = "Copied";
+                setTimeout(function () {
+                    button.textContent = originalButtonText;
+                }, 3000);
+            });
+        });
+    });
+</script>
+
+
     <?php
 }
 
